@@ -1,0 +1,12 @@
+.overlay {
+  z-index: 3;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+canvas {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+}
