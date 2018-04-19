@@ -3,6 +3,11 @@
     "parser": "babel-eslint",
     "rules": {
         "linebreak-style": ["error", "windows"],
-        "no-console": "off"
+        "no-console": "off",
+        "arrow-parens": "off",
+        "no-use-before-define": "warn"
+    },
+    "env": {
+        "browser": true
     }
 }
