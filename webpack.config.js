@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './client/src/js/index.js',
+  entry: './client/js/index.js',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'client', 'build'),
@@ -28,7 +28,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        include: path.resolve(__dirname, 'src'),
+        include: path.resolve(__dirname, 'client'),
         loader: 'babel-loader',
       },
     ],
@@ -38,7 +38,7 @@ module.exports = {
       filename: 'style.css',
     }),
     new HtmlWebpackPlugin({
-      template: 'client/src/index.html',
+      template: 'client/index.html',
     }),
     new CleanWebpackPlugin('client/build'),
   ],
