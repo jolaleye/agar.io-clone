@@ -6,30 +6,62 @@
   <title>Agar.io Clone</title>
 </head>
 <body>
-  <div class="overlay">
+  <div class="start overlay">
+    <div class="ui card start__play-card">
+      <div class="content">
+        <h1 class="ui header">Agar.io Clone</h1>
+      </div>
+      <div class="content">
+        <form class="ui form start__form">
+          <div class="field">
+            <input id="name-input" type="text" placeholder="Nickname">
+          </div>
+          <button class="ui button positive" type="submit">Play as guest</button>
+        </form>
+      </div>
+      <div class="extra content start__game-info">
+        <span>Move your mouse to control your cell</span>
+        <span>Press <strong>Space</strong> to split</span>
+        <span>Press <strong>W</strong> to eject some mass</span>
+      </div>
+    </div>
+  </div>
 
-    <div class="start">
-      <div class="ui card start__play-card">
-        <div class="content">
-          <h1 class="ui header">Agar.io Clone</h1>
-        </div>
-        <div class="content">
-          <form class="ui form">
-            <div class="field">
-              <label>Nickname</label>
-              <input type="text" placeholder="Nickname">
-            </div>
-            <button class="ui button positive" type="submit">Play</button>
-          </form>
-        </div>
-        <div class="extra content start__game-info">
-          <span>Move your mouse to control your cell</span>
-          <span>Press <strong>Space</strong> to split</span>
-          <span>Press <strong>W</strong> to eject some mass</span>
+  <div class="game overlay hidden">
+    <div class="ui card game__leaderboard">
+      <div class="content">
+        <h1 class="ui header">Leaderboard</h1>
+        <div class="ui list">
+          <div class="item leaderboard__player">1. <span class="name"></span></div>
+          <div class="item leaderboard__player">2. <span class="name"></span></div>
+          <div class="item leaderboard__player">3. <span class="name"></span></div>
+          <div class="item leaderboard__player">4. <span class="name"></span></div>
+          <div class="item leaderboard__player">5. <span class="name"></span></div>
+          <div class="item leaderboard__player">6. <span class="name"></span></div>
+          <div class="item leaderboard__player">7. <span class="name"></span></div>
+          <div class="item leaderboard__player">8. <span class="name"></span></div>
+          <div class="item leaderboard__player">9. <span class="name"></span></div>
+          <div class="item leaderboard__player">10. <span class="name"></span></div>
+          <div class="item leaderboard__player me">999. <span class="name"></span></div>
         </div>
       </div>
     </div>
+    <div class="ui card game__score">
+      <div class="content">
+        <div class="center aligned header">Score: <span id="score">0</span></div>
+      </div>
+    </div>
+  </div>
 
+  <div class="end overlay hidden">
+    <div class="ui card stats">
+      <div class="content">
+        <h1 class="ui center aligned header">Match Results</h1>
+      </div>
+      <div class="extra content">
+        <button class="ui fluid primary button">Continue</button>
+      </div>
+    </div>
   </div>
 
   <canvas id="canvas"></canvas>
