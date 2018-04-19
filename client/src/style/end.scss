@@ -1,4 +1,4 @@
-.start {
+.end {
   width: 100%;
   height: 100%;
   display: flex;
@@ -7,7 +7,7 @@
   align-items: center;
   background-color: rgba(0, 0, 0, 0.1);
 
-  &__play-card {
+  & .stats {
     padding: 0.5em !important;
     margin-top: -20em !important;
     width: 25em !important;
@@ -16,12 +16,5 @@
     & h1 {
       font-weight: 300 !important;
     }
-  }
-
-  &__game-info {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    align-items: center;
   }
 }

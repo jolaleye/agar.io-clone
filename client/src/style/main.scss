@@ -1,8 +1,22 @@
+body {
+  overflow: hidden;
+}
+
 .overlay {
-  z-index: 3;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.1);
+
+  &.hidden {
+    display: none;
+  }
+
+  &.start {
+    z-index: 3;
+  }
+
+  &.game {
+    z-index: 2;
+  }
 }
 
 canvas {
