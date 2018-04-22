@@ -7,13 +7,12 @@ import '../style/start.scss';
 import '../style/game.scss';
 import '../style/end.scss';
 
-import { handleSocket, update, draw, changeOverlaysTo } from './app';
+import config from './config';
+import { init, handleSocket, update, draw, changeOverlaysTo } from './app';
 import canvas from './canvas';
 import player from './player';
 
 const socket = io('http://localhost:3001');
-
-const startForm = document.querySelector('.start__form');
 
 const animate = () => {
   window.requestAnimationFrame(animate);
@@ -21,7 +20,21 @@ const animate = () => {
   draw();
 };
 
-startForm.addEventListener('submit', e => {
+// set up canvas
+const initCanvas = async () => {
+  await canvas.drawGrid();
+  canvas.reset();
+};
+window.addEventListener('resize', canvas.resize);
+initCanvas();
+
+// initially randomize the viewport position in the game
+config.offset = {
+  x: _.random(config.gameWidth - config.screenWidth),
+  y: _.random(config.gameHeight - config.screenHeight),
+};
+
+document.querySelector('.start__form').addEventListener('submit', e => {
   e.preventDefault();
 
   const playerNameInput = document.getElementById('name-input');
@@ -33,18 +46,10 @@ startForm.addEventListener('submit', e => {
   // server sends back player
   socket.emit('joinGame', playerName, currentPlayer => {
     player.currentPlayer = currentPlayer;
+    init();
     handleSocket();
     animate();
   });
 });
-
-const initCanvas = async () => {
-  await canvas.drawGrid();
-  canvas.reset();
-};
-
-initCanvas();
-
-window.addEventListener('resize', canvas.resize);
 
 export default socket;
