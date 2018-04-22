@@ -19,9 +19,15 @@ const io = require('socket.io')(server);
 const players = [];
 
 io.on('connection', socket => {
-  socket.emit('welcome');
+  let player;
 
-  socket.on('joinGame', name => {
-    players.push(new Player(socket.id, name));
+  socket.on('joinGame', (name, assignPlayer) => {
+    player = new Player(socket.id, name);
+    players.push(player);
+
+    // send the player back their object
+    assignPlayer(player);
+
+    socket.broadcast.emit('playerJoined', players);
   });
 });
