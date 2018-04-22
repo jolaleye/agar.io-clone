@@ -4,12 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './client/js/index.js',
+  entry: ['babel-polyfill', './client/js/index.js'],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'client', 'build'),
   },
   mode: 'development',
+  devtool: 'eval-source-map',
   devServer: {
     contentBase: false,
     port: 3000,
