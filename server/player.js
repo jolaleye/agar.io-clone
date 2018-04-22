@@ -6,7 +6,7 @@ class Player {
   constructor(id, name) {
     this.id = id;
     this.name = name;
-    this.mass = 10;
+    this.mass = 5;
 
     this.pos = {
       x: _.random(config.gameWidth),
@@ -19,7 +19,7 @@ class Player {
     const yDistance = target.y - this.pos.y;
 
     // greater mass slows the player
-    const drag = this.mass * 10;
+    const drag = Math.min(this.mass * 15, 500);
     // player moves faster when the target is farther away
     const xVel = xDistance / drag;
     const yVel = yDistance / drag;
