@@ -8,7 +8,7 @@ import '../style/game.scss';
 import '../style/end.scss';
 
 import config from './config';
-import { init, handleSocket, update, draw } from './app';
+import { handleSocket, update, draw } from './app';
 import canvas from './canvas';
 import player from './player';
 import ui from './ui';
@@ -47,7 +47,6 @@ document.querySelector('.start__form').addEventListener('submit', e => {
   // server sends back player
   socket.emit('joinGame', playerName, currentPlayer => {
     player.currentPlayer = currentPlayer;
-    init();
     handleSocket();
     animate();
   });
