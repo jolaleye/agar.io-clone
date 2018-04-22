@@ -7,30 +7,44 @@ import '../style/start.scss';
 import '../style/game.scss';
 import '../style/end.scss';
 
-import app from './app';
+import { handleSocket, update, draw, changeOverlaysTo } from './app';
 import canvas from './canvas';
+import player from './player';
 
-let socket;
+const socket = io('http://localhost:3001');
 
 const startForm = document.querySelector('.start__form');
-const playerNameInput = document.getElementById('name-input');
-let playerName;
 
-canvas.drawGrid();
+const animate = () => {
+  window.requestAnimationFrame(animate);
+  update();
+  draw();
+};
 
 startForm.addEventListener('submit', e => {
   e.preventDefault();
 
-  playerName = _.trim(playerNameInput.value);
+  const playerNameInput = document.getElementById('name-input');
+  const playerName = _.trim(playerNameInput.value);
   if (playerName === '') return;
 
-  app.changeOverlaysTo('game');
+  changeOverlaysTo('game');
 
-  socket = io('http://localhost:3001');
-
-  socket.on('welcome', () => {
-    socket.emit('joinGame', playerName);
-    app.socket = socket;
-    app.animate();
+  // server sends back player
+  socket.emit('joinGame', playerName, currentPlayer => {
+    player.currentPlayer = currentPlayer;
+    handleSocket();
+    animate();
   });
 });
+
+const initCanvas = async () => {
+  await canvas.drawGrid();
+  canvas.reset();
+};
+
+initCanvas();
+
+window.addEventListener('resize', canvas.resize);
+
+export default socket;
