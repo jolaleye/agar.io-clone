@@ -5,39 +5,81 @@ import config from './config';
 class Canvas {
   canvas = document.getElementById('canvas');
   context = this.canvas.getContext('2d');
+  gridImage = null;
 
   constructor() {
-    this.canvas.width = config.gameWidth;
-    this.canvas.height = config.gameHeight;
+    this.canvas.width = config.screenWidth;
+    this.canvas.height = config.screenHeight;
+  }
+
+  update = () => {
+    const c = this.context;
+
+    // reset canvas
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    this.reset();
+
+    // game area bounds
+    const xMax = config.gameWidth - config.screenWidth;
+    const yMax = config.gameHeight - config.screenHeight;
+
+    // contain the viewport within the game bounds
+    config.offset.x = _.clamp(config.viewport.left, 0, xMax);
+    config.offset.y = _.clamp(config.viewport.top, 0, yMax);
+  }
+
+  resize = () => {
+    this.canvas.width = config.screenWidth;
+    this.canvas.height = config.screenHeight;
+    this.reset();
   }
 
   reset = () => {
-    const c = this.context;
-    c.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawGrid();
+    const { context: c, gridImage: image } = this;
+    const { offset, screenWidth, screenHeight } = config;
+
+    c.clearRect(0, 0, config.screenWidth, config.screenHeight);
+
+    c.drawImage(
+      image,
+      offset.x, offset.y, screenWidth, screenHeight,
+      0, 0, screenWidth, screenHeight,
+    );
   }
 
   drawGrid = () => {
-    const c = this.context;
+    // make a temporary canvas to draw a game-sized grid
+    const c = document.createElement('canvas').getContext('2d');
+    c.canvas.width = config.gameWidth;
+    c.canvas.height = config.gameHeight;
+
     c.strokeStyle = 'rgba(0, 0, 0, 0.3)';
     c.lineWidth = 1;
+    c.beginPath();
 
     // vertical grid lines
-    _.times(config.gameWidth / config.gridScale, i => {
-      c.beginPath();
-      c.moveTo(i * config.gridScale, 0);
-      c.lineTo(i * config.gridScale, config.gameHeight);
-      c.stroke();
-      c.closePath();
-    });
+    for (let x = 0; x < config.gameWidth; x += config.gridScale) {
+      c.moveTo(x, 0);
+      c.lineTo(x, config.gameHeight);
+    }
 
     // horizontal grid lines
-    _.times(config.gameHeight / config.gridScale, i => {
-      c.beginPath();
-      c.moveTo(0, i * config.gridScale);
-      c.lineTo(config.gameWidth, i * config.gridScale);
-      c.stroke();
-      c.closePath();
+    for (let y = 0; y < config.gameHeight; y += config.gridScale) {
+      c.moveTo(0, y);
+      c.lineTo(config.gameWidth, y);
+    }
+
+    c.stroke();
+    c.closePath();
+
+    // save the grid as an image to be used for the background
+    return new Promise((resolve, reject) => {
+      this.gridImage = new Image();
+
+      this.gridImage.onload = resolve;
+      this.gridImage.onerror = reject;
+
+      this.gridImage.src = c.canvas.toDataURL();
     });
   }
 }
