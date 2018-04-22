@@ -8,9 +8,10 @@ import '../style/game.scss';
 import '../style/end.scss';
 
 import config from './config';
-import { init, handleSocket, update, draw, changeOverlaysTo } from './app';
+import { init, handleSocket, update, draw } from './app';
 import canvas from './canvas';
 import player from './player';
+import ui from './ui';
 
 const socket = io('http://localhost:3001');
 
@@ -41,7 +42,7 @@ document.querySelector('.start__form').addEventListener('submit', e => {
   const playerName = _.trim(playerNameInput.value);
   if (playerName === '') return;
 
-  changeOverlaysTo('game');
+  ui.changeOverlayTo('game');
 
   // server sends back player
   socket.emit('joinGame', playerName, currentPlayer => {
