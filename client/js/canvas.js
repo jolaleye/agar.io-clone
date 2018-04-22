@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import config from './config';
+import player from './player';
 
 class Canvas {
   canvas = document.getElementById('canvas');
@@ -17,15 +18,18 @@ class Canvas {
 
     // reset canvas
     c.setTransform(1, 0, 0, 1, 0, 0);
-    this.reset();
 
     // game area bounds
     const xMax = config.gameWidth - config.screenWidth;
     const yMax = config.gameHeight - config.screenHeight;
 
+    // viewport bounds
+    const left = player.currentPlayer.pos.x - (config.screenWidth / 2);
+    const top = player.currentPlayer.pos.y - (config.screenHeight / 2);
+
     // contain the viewport within the game bounds
-    config.offset.x = _.clamp(config.viewport.left, 0, xMax);
-    config.offset.y = _.clamp(config.viewport.top, 0, yMax);
+    config.offset.x = _.clamp(left, 0, xMax);
+    config.offset.y = _.clamp(top, 0, yMax);
   }
 
   resize = () => {
