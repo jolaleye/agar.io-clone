@@ -1,7 +1,10 @@
 import config from './config';
 
 class Ui {
-  target = { x: 0, y: 0 };
+  target = {
+    x: (config.screenWidth / 2) + config.offset.x,
+    y: (config.screenHeight / 2) + config.offset.y,
+  };
 
   constructor() {
     document.querySelector('.game.overlay').addEventListener('mousemove', this.updateTarget);
