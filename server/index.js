@@ -16,18 +16,23 @@ if (process.env.NODE_ENV === 'production') {
 const server = app.listen(config.port, () => console.log(`Server started on port ${config.port}`));
 const io = require('socket.io')(server);
 
-const players = [];
+let players = {};
 
 io.on('connection', socket => {
   let player;
 
   socket.on('joinGame', (name, assignPlayer) => {
     player = new Player(socket.id, name);
-    players.push(player);
-
-    // send the player back their object
+    players = { ...players, [player.id]: player };
     assignPlayer(player);
-
-    socket.broadcast.emit('playerJoined', players);
   });
+
+  socket.on('requestPlayers', () => socket.emit('players', Object.values(players)));
+
+  socket.on('requestMove', target => {
+    player.move(target);
+    socket.emit('moveTo', player.pos);
+  });
+
+  socket.on('disconnect', () => delete players[socket.id]);
 });
