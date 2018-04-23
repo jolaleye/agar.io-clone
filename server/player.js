@@ -32,18 +32,27 @@ class Player {
     this.pos.y += yVel;
   }
 
+  eat() {
+    this.mass += 1;
+    this.radius = this.mass * 10;
+  }
+
   checkFood(foods) {
+    let ate = false;
+
     foods.forEach((food, i) => {
       const xDistance = this.pos.x - food.pos.x;
       const yDistance = this.pos.y - food.pos.y;
       const distance = Math.sqrt((xDistance ** 2) + (yDistance ** 2));
 
       if (distance < this.radius) {
-        this.mass += 1;
-        this.radius = this.mass * 10;
+        this.eat();
         foods.splice(i, 1);
+        ate = true;
       }
     });
+
+    return ate;
   }
 }
 
