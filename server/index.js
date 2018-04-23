@@ -1,7 +1,9 @@
 const express = require('express');
+const _ = require('lodash');
 
 const config = require('./config');
 const Player = require('./Player');
+const { createFood } = require('./util');
 
 const app = express();
 
@@ -17,6 +19,7 @@ const server = app.listen(config.port, () => console.log(`Server started on port
 const io = require('socket.io')(server);
 
 let players = {};
+let food = [];
 
 io.on('connection', socket => {
   let player;
@@ -25,6 +28,8 @@ io.on('connection', socket => {
     player = new Player(socket.id, name);
     players = { ...players, [player.id]: player };
     assignPlayer(player);
+
+    food = food.concat(createFood(30));
   });
 
   socket.on('requestPlayers', () => socket.emit('players', Object.values(players)));
@@ -32,6 +37,21 @@ io.on('connection', socket => {
   socket.on('requestMove', target => {
     player.move(target);
     socket.emit('moveTo', player.pos);
+  });
+
+  socket.on('requestFood', () => {
+    if (!_.isEmpty(food)) player.checkFood(food);
+    socket.emit('food', food);
+  });
+
+  socket.on('requestScore', () => socket.emit('score', player.mass));
+
+  socket.on('requestLeaders', () => {
+    const leaders = _.sortBy(Object.values(players), p => p.mass).reverse();
+
+    if (leaders.length >= 10) leaders.splice(10);
+
+    socket.emit('leaders', leaders);
   });
 
   socket.on('disconnect', () => delete players[socket.id]);
