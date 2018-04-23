@@ -3,7 +3,7 @@ const _ = require('lodash');
 
 const config = require('./config');
 const Player = require('./Player');
-const { createFood } = require('./util');
+const { createFood, getLeaders } = require('./util');
 
 const app = express();
 
@@ -40,25 +40,14 @@ io.on('connection', socket => {
   });
 
   socket.on('requestFood', () => {
-    if (!_.isEmpty(food)) player.checkFood(food);
+    // if the player eats, add another food
+    if (!_.isEmpty(food) && player.checkFood(food)) food = food.concat(createFood(1));
     socket.emit('food', food);
   });
 
   socket.on('requestScore', () => socket.emit('score', player.mass));
 
-  socket.on('requestLeaders', () => {
-    const sortedPlayers = _.sortBy(Object.values(players), p => p.mass).reverse();
-
-    // give every player their rank
-    // eslint-disable-next-line
-    sortedPlayers.forEach((sortedPlayer, i) => { sortedPlayer.rank = i + 1; });
-    // cut down to 10 players
-    if (sortedPlayers.length >= 10) sortedPlayers.splice(10);
-    // if the current player isn't in the top ten add them to the end
-    if (!_.includes(sortedPlayers, player)) sortedPlayers.push(player);
-
-    socket.emit('leaders', sortedPlayers);
-  });
+  socket.on('requestLeaders', () => socket.emit('leaders', getLeaders(players, player)));
 
   socket.on('disconnect', () => delete players[socket.id]);
 });
