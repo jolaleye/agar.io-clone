@@ -11,11 +11,11 @@ class Player {
     this.players.forEach(player => {
       const x = player.pos.x - config.offset.x;
       const y = player.pos.y - config.offset.y;
-      const radius = player.mass * 10;
+      const { radius } = player;
 
       const fillColor = '#12FFF7';
       const strokeColor = '#10efe8';
-      const fontSize = player.mass * 4;
+      const fontSize = Math.max(radius / 2, 30);
 
       // cell
       c.fillStyle = fillColor;
