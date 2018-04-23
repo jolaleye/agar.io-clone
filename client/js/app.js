@@ -23,6 +23,6 @@ export const update = () => {
 
 export const draw = () => {
   canvas.reset();
-  player.drawPlayers();
   food.drawFood();
+  player.drawPlayers();
 };
