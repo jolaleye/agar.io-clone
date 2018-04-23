@@ -12,14 +12,11 @@ class Player {
       const x = player.pos.x - config.offset.x;
       const y = player.pos.y - config.offset.y;
       const { radius } = player;
-
-      const fillColor = '#12FFF7';
-      const strokeColor = '#10efe8';
       const fontSize = Math.max(radius / 2, 30);
 
       // cell
-      c.fillStyle = fillColor;
-      c.strokeStyle = strokeColor;
+      c.fillStyle = player.fillColor;
+      c.strokeStyle = player.strokeColor;
       c.lineWidth = 5;
       c.beginPath();
       c.arc(x, y, radius, 0, 2 * Math.PI);

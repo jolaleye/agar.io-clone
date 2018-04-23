@@ -8,6 +8,9 @@ class Player {
     this.name = name;
     this.mass = 5;
     this.radius = this.mass * 10;
+    this.colorSet = config.colors[_.random(config.colors.length - 1)];
+    this.fillColor = this.colorSet.fill;
+    this.strokeColor = this.colorSet.stroke;
 
     this.pos = {
       x: _.random(config.gameWidth),
