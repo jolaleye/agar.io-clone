@@ -39,6 +39,13 @@ class Ui {
     });
   }
 
+  endGame = () => {
+    this.changeOverlayTo('end');
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      this.changeOverlayTo('start');
+    });
+  }
+
   changeOverlayTo = mode => {
     const startOverlay = document.querySelector('.start.overlay');
     const gameOverlay = document.querySelector('.game.overlay');

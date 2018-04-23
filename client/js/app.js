@@ -10,6 +10,7 @@ export const handleSocket = () => {
   socket.on('food', newFood => { food.food = newFood; });
   socket.on('score', score => ui.updateScore(score));
   socket.on('leaders', leaders => ui.updateLeaderboard(leaders));
+  socket.on('death', () => ui.endGame());
 };
 
 export const update = () => {
