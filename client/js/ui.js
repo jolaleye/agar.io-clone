@@ -1,4 +1,7 @@
+import _ from 'lodash';
+
 import config from './config';
+import player from './player';
 
 class Ui {
   target = {
@@ -13,6 +16,27 @@ class Ui {
   updateTarget = e => {
     this.target.x = e.clientX + config.offset.x;
     this.target.y = e.clientY + config.offset.y;
+  }
+
+  updateScore = score => {
+    document.getElementById('score').innerHTML = score;
+  }
+
+  updateLeaderboard = leaders => {
+    const leaderboard = document.querySelector('.game__leaderboard .list');
+    leaderboard.innerHTML = '';
+
+    const createEntry = (place, name, current) => (
+      `<div class="item leaderboard__player ${current ? 'me' : null}">
+        ${place}.
+        <span class="name">${name}</span>
+      </div>`
+    );
+
+    leaders.forEach(leader => {
+      const current = leader.id === player.currentPlayer.id;
+      leaderboard.innerHTML += createEntry(leader.rank, leader.name, current);
+    });
   }
 
   changeOverlayTo = mode => {

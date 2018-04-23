@@ -47,11 +47,17 @@ io.on('connection', socket => {
   socket.on('requestScore', () => socket.emit('score', player.mass));
 
   socket.on('requestLeaders', () => {
-    const leaders = _.sortBy(Object.values(players), p => p.mass).reverse();
+    const sortedPlayers = _.sortBy(Object.values(players), p => p.mass).reverse();
 
-    if (leaders.length >= 10) leaders.splice(10);
+    // give every player their rank
+    // eslint-disable-next-line
+    sortedPlayers.forEach((sortedPlayer, i) => { sortedPlayer.rank = i + 1; });
+    // cut down to 10 players
+    if (sortedPlayers.length >= 10) sortedPlayers.splice(10);
+    // if the current player isn't in the top ten add them to the end
+    if (!_.includes(sortedPlayers, player)) sortedPlayers.push(player);
 
-    socket.emit('leaders', leaders);
+    socket.emit('leaders', sortedPlayers);
   });
 
   socket.on('disconnect', () => delete players[socket.id]);
