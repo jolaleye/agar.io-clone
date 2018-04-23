@@ -11,7 +11,7 @@ body {
     display: none;
   }
 
-  &.start {
+  &.start, &.end {
     z-index: 3;
   }
 
