@@ -32,7 +32,21 @@ io.on('connection', socket => {
     food = food.concat(createFood(30));
   });
 
-  socket.on('requestPlayers', () => socket.emit('players', Object.values(players)));
+  socket.on('requestPlayers', () => {
+    const playersList = Object.values(players);
+    let fight = false;
+
+    if (playersList.length > 1) { fight = player.checkOthers(playersList); }
+
+    // current player won
+    if (fight && fight.winner === player.id) player.eatOther(players[fight.loser].mass);
+    // current player lost
+    else if (fight && fight.loser === player.id) socket.emit('death');
+
+    delete players[fight.loser];
+
+    socket.emit('players', playersList);
+  });
 
   socket.on('requestMove', target => {
     player.move(target);
@@ -42,6 +56,7 @@ io.on('connection', socket => {
   socket.on('requestFood', () => {
     // if the player eats, add another food
     if (!_.isEmpty(food) && player.checkFood(food)) food = food.concat(createFood(1));
+
     socket.emit('food', food);
   });
 

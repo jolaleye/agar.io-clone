@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
 const config = require('./config');
+const { getDistance } = require('./util');
 
 class Player {
   constructor(id, name) {
@@ -19,34 +20,55 @@ class Player {
   }
 
   move(target) {
-    const xDistance = target.x - this.pos.x;
-    const yDistance = target.y - this.pos.y;
+    const distance = getDistance(this.pos.x, target.x, this.pos.y, target.y);
 
     // greater mass slows the player
     const drag = Math.min(this.mass * 25, 1000);
     // player moves faster when the target is farther away
-    const xVel = xDistance / drag;
-    const yVel = yDistance / drag;
+    const xVel = distance.x / drag;
+    const yVel = distance.y / drag;
 
     this.pos.x += xVel;
     this.pos.y += yVel;
   }
 
-  eat() {
+  eatOther(mass) {
+    this.mass += mass;
+    this.radius = this.mass * 10;
+  }
+
+  eatFood() {
     this.mass += 1;
     this.radius = this.mass * 10;
+  }
+
+  checkOthers(players) {
+    let fight = false;
+
+    players.forEach(player => {
+      // dont check yourself
+      if (this.id === player.id) return;
+
+      const distance = getDistance(this.pos.x, player.pos.x, this.pos.y, player.pos.y).total;
+
+      // players touching and one has a larger mass
+      if (distance < (this.radius + player.radius) && this.mass !== player.mass) {
+        if (this.mass > player.mass) fight = { winner: this.id, loser: player.id };
+        else if (this.mass < player.mass) fight = { winner: player.id, loser: this.id };
+      }
+    });
+
+    return fight;
   }
 
   checkFood(foods) {
     let ate = false;
 
     foods.forEach((food, i) => {
-      const xDistance = this.pos.x - food.pos.x;
-      const yDistance = this.pos.y - food.pos.y;
-      const distance = Math.sqrt((xDistance ** 2) + (yDistance ** 2));
+      const distance = getDistance(this.pos.x, food.pos.x, this.pos.y, food.pos.y).total;
 
       if (distance < this.radius) {
-        this.eat();
+        this.eatFood();
         foods.splice(i, 1);
         ate = true;
       }
