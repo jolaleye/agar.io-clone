@@ -22,14 +22,19 @@ class Player {
 
   move(target) {
     const distance = getDistance(this.pos.x, target.x, this.pos.y, target.y);
+    const direction = Math.atan2(distance.y, distance.x);
 
     // greater mass slows the player
     const drag = this.mass * 3;
 
-    const direction = Math.atan2(distance.y, distance.x);
+    let dx = (config.speedFactor * Math.cos(direction)) / drag;
+    let dy = (config.speedFactor * Math.sin(direction)) / drag;
 
-    const dx = (config.speedFactor * Math.cos(direction)) / drag;
-    const dy = (config.speedFactor * Math.sin(direction)) / drag;
+    // distance from target affects speed when the target is close
+    if (distance.total < (50 + this.mass)) {
+      dy *= distance.total / (50 + this.mass);
+      dx *= distance.total / (50 + this.mass);
+    }
 
     this.pos.x += dx;
     this.pos.y += dy;
@@ -39,14 +44,9 @@ class Player {
     this.pos.y = _.clamp(this.pos.y, 0 + (this.mass / 2), config.gameHeight);
   }
 
-  eatOther(mass) {
-    this.mass += mass;
-    this.score += mass;
-  }
-
-  eatFood() {
-    this.mass += 1;
-    this.score += 1;
+  eat(value) {
+    this.mass += value;
+    this.score += value;
   }
 
   checkOthers(players) {
@@ -75,7 +75,7 @@ class Player {
       const distance = getDistance(this.pos.x, food.pos.x, this.pos.y, food.pos.y);
 
       if (distance.total < this.mass) {
-        this.eatFood();
+        this.eat(1);
         foods.splice(i, 1);
         ate = true;
       }
