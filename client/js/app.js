@@ -5,9 +5,9 @@ import ui from './ui';
 import food from './food';
 
 export const handleSocket = () => {
-  socket.on('players', players => { player.players = players; });
-  socket.on('moveTo', pos => { player.currentPlayer.pos = pos; });
-  socket.on('food', newFood => { food.food = newFood; });
+  socket.on('players', players => player.updatePlayers(players));
+  socket.on('moveTo', pos => player.moveTo(pos));
+  socket.on('food', newFood => food.updateFood(newFood));
   socket.on('score', score => ui.updateScore(score));
   socket.on('leaders', leaders => ui.updateLeaderboard(leaders));
   socket.on('death', () => ui.endGame());
