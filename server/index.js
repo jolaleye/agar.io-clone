@@ -29,7 +29,7 @@ io.on('connection', socket => {
     players = { ...players, [player.id]: player };
     assignPlayer(player);
 
-    food = food.concat(createFood(config.foodToAddOnJoin));
+    if (food.length < config.maxFood) food = food.concat(createFood(config.foodToAddOnJoin));
   });
 
   socket.on('requestPlayers', () => {
@@ -39,9 +39,12 @@ io.on('connection', socket => {
     if (playersList.length > 1) { fight = player.checkOthers(playersList); }
 
     // current player won
-    if (fight && fight.winner === player.id) player.eatOther(players[fight.loser].mass);
+    if (fight && fight.winner === player.id) player.eat(players[fight.loser].mass);
     // current player lost
-    else if (fight && fight.loser === player.id) socket.emit('death');
+    else if (fight && fight.loser === player.id) {
+      socket.emit('death');
+      delete players[socket.id];
+    }
 
     delete players[fight.loser];
 
