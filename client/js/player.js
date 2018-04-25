@@ -5,6 +5,15 @@ class Player {
   players = [];
   currentPlayer = null;
 
+  updatePlayers = players => {
+    this.players = players;
+  }
+
+  moveTo = pos => {
+    this.currentPlayer.pos.x = pos.x;
+    this.currentPlayer.pos.y = pos.y;
+  }
+
   drawPlayers = () => {
     const c = canvas.context;
 

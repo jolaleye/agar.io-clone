@@ -4,6 +4,10 @@ import canvas from './canvas';
 class Food {
   food = [];
 
+  updateFood = food => {
+    this.food = food;
+  }
+
   drawFood = () => {
     const c = canvas.context;
 
