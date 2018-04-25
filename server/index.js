@@ -29,7 +29,7 @@ io.on('connection', socket => {
     players = { ...players, [player.id]: player };
     assignPlayer(player);
 
-    food = food.concat(createFood(30));
+    food = food.concat(createFood(config.foodToAddOnJoin));
   });
 
   socket.on('requestPlayers', () => {
@@ -60,7 +60,7 @@ io.on('connection', socket => {
     socket.emit('food', food);
   });
 
-  socket.on('requestScore', () => socket.emit('score', player.mass));
+  socket.on('requestScore', () => socket.emit('score', player.score));
 
   socket.on('requestLeaders', () => socket.emit('leaders', getLeaders(players, player)));
 

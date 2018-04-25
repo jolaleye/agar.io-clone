@@ -11,4 +11,7 @@ module.exports = {
     { fill: '#34e89e', stroke: '#26c182' },
     { fill: '#f96668', stroke: '#ff474a' },
   ],
+  foodToAddOnJoin: 50,
+  defaultPlayerMass: 50,
+  speedFactor: 750,
 };
