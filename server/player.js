@@ -33,6 +33,10 @@ class Player {
 
     this.pos.x += dx;
     this.pos.y += dy;
+
+    // keep the player in the game area
+    this.pos.x = _.clamp(this.pos.x, 0 + (this.mass / 2), config.gameWidth);
+    this.pos.y = _.clamp(this.pos.y, 0 + (this.mass / 2), config.gameHeight);
   }
 
   eatOther(mass) {

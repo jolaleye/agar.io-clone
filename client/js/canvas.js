@@ -14,17 +14,9 @@ class Canvas {
   }
 
   update = () => {
-    // game area bounds
-    const xMax = config.gameWidth - config.screenWidth;
-    const yMax = config.gameHeight - config.screenHeight;
-
-    // viewport bounds
-    const left = player.currentPlayer.pos.x - (config.screenWidth / 2);
-    const top = player.currentPlayer.pos.y - (config.screenHeight / 2);
-
-    // contain the viewport within the game bounds
-    config.offset.x = _.clamp(left, 0, xMax);
-    config.offset.y = _.clamp(top, 0, yMax);
+    // follow the player's position
+    config.offset.x = player.currentPlayer.pos.x - (config.screenWidth / 2);
+    config.offset.y = player.currentPlayer.pos.y - (config.screenHeight / 2);
   }
 
   resize = () => {
@@ -37,37 +29,42 @@ class Canvas {
     const { context: c, gridImage: image } = this;
     const { offset, screenWidth, screenHeight } = config;
 
-    c.setTransform(1, 0, 0, 1, 0, 0);
-
     c.clearRect(0, 0, config.screenWidth, config.screenHeight);
 
-    c.drawImage(
-      image,
-      offset.x, offset.y, screenWidth, screenHeight,
-      0, 0, screenWidth, screenHeight,
-    );
+    // crop positions - adding half the screen so that the grid appears beyond game boundaries
+    const sx = offset.x + (config.screenWidth / 2);
+    const sy = offset.y + (config.screenHeight / 2);
+
+    c.drawImage(image, sx, sy, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight);
   }
 
   drawGrid = () => {
     // make a temporary canvas to draw a game-sized grid
     const c = document.createElement('canvas').getContext('2d');
-    c.canvas.width = config.gameWidth;
-    c.canvas.height = config.gameHeight;
+
+    const width = config.gameWidth + config.screenWidth;
+    const height = config.gameHeight + config.screenHeight;
+
+    c.canvas.width = width;
+    c.canvas.height = height;
+
+    c.fillStyle = '#f2f9ff';
+    c.fillRect(0, 0, width, height);
 
     c.strokeStyle = 'rgba(0, 0, 0, 0.3)';
     c.lineWidth = 1;
     c.beginPath();
 
     // vertical grid lines
-    for (let x = 0; x < config.gameWidth; x += config.gridScale) {
+    for (let x = 0; x < width; x += config.gridScale) {
       c.moveTo(x, 0);
-      c.lineTo(x, config.gameHeight);
+      c.lineTo(x, height);
     }
 
     // horizontal grid lines
-    for (let y = 0; y < config.gameHeight; y += config.gridScale) {
+    for (let y = 0; y < height; y += config.gridScale) {
       c.moveTo(0, y);
-      c.lineTo(config.gameWidth, y);
+      c.lineTo(width, y);
     }
 
     c.stroke();
