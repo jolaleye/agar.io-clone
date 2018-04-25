@@ -11,15 +11,15 @@ class Player {
     this.players.forEach(player => {
       const x = player.pos.x - config.offset.x;
       const y = player.pos.y - config.offset.y;
-      const { radius } = player;
-      const fontSize = Math.max(radius / 2, 30);
+      const { mass } = player;
+      const fontSize = Math.max(mass / 2, 30);
 
       // cell
       c.fillStyle = player.fillColor;
       c.strokeStyle = player.strokeColor;
       c.lineWidth = 5;
       c.beginPath();
-      c.arc(x, y, radius, 0, 2 * Math.PI);
+      c.arc(x, y, mass, 0, 2 * Math.PI);
       c.fill();
       c.stroke();
       c.closePath();
