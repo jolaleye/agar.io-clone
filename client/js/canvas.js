@@ -14,11 +14,6 @@ class Canvas {
   }
 
   update = () => {
-    const c = this.context;
-
-    // reset canvas
-    c.setTransform(1, 0, 0, 1, 0, 0);
-
     // game area bounds
     const xMax = config.gameWidth - config.screenWidth;
     const yMax = config.gameHeight - config.screenHeight;
@@ -41,6 +36,8 @@ class Canvas {
   reset = () => {
     const { context: c, gridImage: image } = this;
     const { offset, screenWidth, screenHeight } = config;
+
+    c.setTransform(1, 0, 0, 1, 0, 0);
 
     c.clearRect(0, 0, config.screenWidth, config.screenHeight);
 
