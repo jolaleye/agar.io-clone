@@ -48,7 +48,7 @@ io.on('connection', socket => {
 
     delete players[fight.loser];
 
-    socket.emit('players', playersList);
+    socket.emit('players', players);
   });
 
   socket.on('requestMove', target => {

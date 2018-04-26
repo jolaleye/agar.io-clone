@@ -6,7 +6,8 @@ class Player {
   currentPlayer = null;
 
   updatePlayers = players => {
-    this.players = players;
+    this.players = Object.values(players);
+    this.currentPlayer = players[this.currentPlayer.id];
   }
 
   moveTo = pos => {
