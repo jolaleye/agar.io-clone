@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import config from './config';
 import player from './player';
 
