@@ -60,8 +60,11 @@ class Player {
 
       // players touching and one has a larger mass
       if (distance.total < (this.mass + player.mass) && this.mass !== player.mass) {
-        if (this.mass > player.mass) fight = { winner: this.id, loser: player.id };
-        else if (this.mass < player.mass) fight = { winner: player.id, loser: this.id };
+        if (this.mass > player.mass + config.massDiffToEat) {
+          fight = { winner: this.id, loser: player.id };
+        } else if (this.mass + config.massDiffToEat < player.mass) {
+          fight = { winner: player.id, loser: this.id };
+        }
       }
     });
 

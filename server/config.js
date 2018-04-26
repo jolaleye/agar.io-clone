@@ -6,6 +6,7 @@ module.exports = {
   defaultPlayerMass: 40,
   speedFactor: 700,
   maxFood: 500,
+  massDiffToEat: 10,
   colors: [
     { fill: '#F44336', stroke: '#E53935' },
     { fill: '#E91E63', stroke: '#D81B60' },
