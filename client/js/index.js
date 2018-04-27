@@ -43,6 +43,7 @@ document.querySelector('.start__form').addEventListener('submit', e => {
   if (playerName === '') return;
 
   ui.changeOverlayTo('game');
+  config.playing = true;
 
   // server sends back player
   socket.emit('joinGame', playerName, currentPlayer => {
