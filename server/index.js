@@ -20,6 +20,7 @@ const io = require('socket.io')(server);
 
 let players = {};
 let food = [];
+const masses = [];
 
 io.on('connection', socket => {
   let player;
@@ -36,16 +37,12 @@ io.on('connection', socket => {
     const playersList = Object.values(players);
     let fight = false;
 
-    if (playersList.length > 1) { fight = player.checkOthers(playersList); }
+    if (playersList.length > 1) fight = player.checkOthers(playersList);
 
     // current player won
     if (fight && fight.winner === player.id) player.eat(players[fight.loser].mass);
     // current player lost
-    else if (fight && fight.loser === player.id) {
-      socket.emit('death');
-      delete players[socket.id];
-    }
-
+    else if (fight && fight.loser === player.id) socket.emit('death');
     delete players[fight.loser];
 
     socket.emit('players', players);
@@ -59,8 +56,18 @@ io.on('connection', socket => {
   socket.on('requestFood', () => {
     // if the player eats, add another food
     if (!_.isEmpty(food) && player.checkFood(food)) food = food.concat(createFood(1));
-
     socket.emit('food', food);
+  });
+
+  socket.on('eject', () => player.eject(masses));
+
+  socket.on('requestMasses', () => {
+    if (!_.isEmpty(masses)) {
+      player.checkMasses(masses);
+      // move each mass... they slow down over time
+      masses.forEach(mass => mass.move());
+    }
+    socket.emit('masses', masses);
   });
 
   socket.on('requestScore', () => socket.emit('score', player.score));
