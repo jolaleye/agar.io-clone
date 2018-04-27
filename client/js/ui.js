@@ -1,5 +1,4 @@
-import _ from 'lodash';
-
+import socket from './index';
 import config from './config';
 import player from './player';
 
@@ -11,11 +10,17 @@ class Ui {
 
   constructor() {
     document.querySelector('.game.overlay').addEventListener('mousemove', this.updateTarget);
+    document.addEventListener('keypress', this.eject);
   }
 
   updateTarget = e => {
     this.target.x = e.clientX + config.offset.x;
     this.target.y = e.clientY + config.offset.y;
+  }
+
+  eject = e => {
+    if (!config.playing) return;
+    if (e.key === 'w') socket.emit('eject');
   }
 
   updateScore = score => {
