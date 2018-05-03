@@ -46,6 +46,7 @@ io.on('connection', socket => {
 
   socket.on('requestMove', target => {
     player.move(target);
+    player.checkSelf();
     player.updateMass();
     socket.emit('moveTo', player.center);
   });
@@ -66,6 +67,8 @@ io.on('connection', socket => {
     }
     socket.emit('masses', masses);
   });
+
+  socket.on('split', () => player.split());
 
   socket.on('requestScore', () => socket.emit('score', player.score));
 
