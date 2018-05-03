@@ -11,6 +11,7 @@ class Ui {
   constructor() {
     document.querySelector('.game.overlay').addEventListener('mousemove', this.updateTarget);
     document.addEventListener('keypress', this.eject);
+    document.addEventListener('keypress', this.split);
   }
 
   updateTarget = e => {
@@ -21,6 +22,11 @@ class Ui {
   eject = e => {
     if (!config.playing) return;
     if (e.key === 'w') socket.emit('eject');
+  }
+
+  split = e => {
+    if (!config.playing) return;
+    if (e.key === ' ') socket.emit('split');
   }
 
   updateScore = score => {
