@@ -1,122 +1,147 @@
 const _ = require('lodash');
 
 const config = require('./config');
-const { getDistance } = require('./util');
 const Mass = require('./Mass');
+const Cell = require('./Cell');
+const { getDistance } = require('./util');
 
 class Player {
   constructor(id, name) {
     this.id = id;
     this.name = name;
-    this.mass = config.defaultPlayerMass;
     this.score = 0;
+    this.cells = [];
+    this.center = null;
+    this.totalMass = config.defaultPlayerMass;
 
     this.colorSet = config.colors[_.random(config.colors.length - 1)];
     this.fillColor = this.colorSet.fill;
     this.strokeColor = this.colorSet.stroke;
 
-    this.pos = {
-      x: _.random(config.gameWidth),
-      y: _.random(config.gameHeight),
-    };
+    this.initCell();
+  }
 
-    this.dx = 0;
-    this.dy = 0;
+  initCell() {
+    // create an initial cell
+    const initialMass = config.defaultPlayerMass;
+    const initialX = _.random(config.gameWidth);
+    const initialY = _.random(config.gameHeight);
+    const initialDx = 0;
+    const initialDy = 0;
+
+    this.cells.push(new Cell(initialMass, initialX, initialY, initialDx, initialDy));
+    this.center = { x: initialX, y: initialY };
   }
 
   move(target) {
-    const distance = getDistance(this.pos.x, target.x, this.pos.y, target.y);
-    const direction = Math.atan2(distance.y, distance.x);
+    this.cells.forEach(cell => cell.move(target));
 
-    // greater mass slows the player
-    const drag = this.mass * 3;
+    // find player's center
+    if (this.cells.length === 1) {
+      this.center.x = this.cells[0].pos.x;
+      this.center.y = this.cells[0].pos.y;
+    } else {
+      const maxX = _.maxBy(this.cells, cell => cell.pos.x);
+      const minX = _.minBy(this.cells, cell => cell.pos.x);
+      const maxY = _.maxBy(this.cells, cell => cell.pos.y);
+      const minY = _.minBy(this.cells, cell => cell.pos.y);
 
-    this.dx = (config.speedFactor * Math.cos(direction)) / drag;
-    this.dy = (config.speedFactor * Math.sin(direction)) / drag;
-
-    // distance from target affects speed when the target is close
-    if (distance.total < (50 + this.mass)) {
-      this.dy *= distance.total / (50 + this.mass);
-      this.dx *= distance.total / (50 + this.mass);
+      const x = (maxX - minX) / 2;
+      const y = (maxY - minY) / 2;
+      this.center = { x, y };
     }
-
-    this.pos.x += this.dx;
-    this.pos.y += this.dy;
-
-    // keep the player in the game area
-    this.pos.x = _.clamp(this.pos.x, this.mass / 2, config.gameWidth);
-    this.pos.y = _.clamp(this.pos.y, this.mass / 2, config.gameHeight);
   }
 
   eat(value) {
-    this.mass += value;
     this.score += value;
   }
 
+  updateMass() {
+    this.totalMass = 0;
+    this.cells.forEach(cell => { this.totalMass += cell.mass; });
+  }
+
   eject(masses) {
-    if (this.mass < config.massToEject) return;
+    const cell = this.cells[0];
+
+    // must have a certain mass and can't be split
+    if (cell.mass < config.massToEject || this.cells.length > 1) return;
 
     // eject the mass in the direction the player is moving
-    let x = this.pos.x + (this.dx < 0 ? -this.mass : this.mass);
-    let y = this.pos.y + (this.dy < 0 ? -this.mass : this.mass);
+    let x = cell.pos.x + (cell.dx < 0 ? -cell.mass : cell.mass);
+    let y = cell.pos.y + (cell.dy < 0 ? -cell.mass : cell.mass);
+
     // keep the mass in the game area
     x = _.clamp(x, 0, config.gameWidth);
     y = _.clamp(y, 0, config.gameHeight);
 
-    const newMass = new Mass(x, y, this.dx * 2, this.dy * 2, this.fillColor, this.strokeColor);
+    const newMass = new Mass(x, y, cell.dx * 2, cell.dy * 2, this.fillColor, this.strokeColor);
 
-    this.mass -= newMass.mass;
+    cell.mass -= newMass.mass;
 
     masses.push(newMass);
   }
 
   checkOthers(players) {
-    let fight = false;
-
+    // check every player
     players.forEach(player => {
-      // dont check yourself
+      // dont check this player
       if (this.id === player.id) return;
 
-      const distance = getDistance(this.pos.x, player.pos.x, this.pos.y, player.pos.y);
+      // check all of your cells against all of their cells
+      this.cells.forEach((thisCell, thisCellIndex) => {
+        player.cells.forEach((otherCell, otherCellIndex) => {
+          const distance = getDistance(
+            thisCell.pos.x, otherCell.pos.x,
+            thisCell.pos.y, otherCell.pos.y,
+          );
 
-      // players touching and one has a larger mass
-      if (distance.total < (this.mass + player.mass) && this.mass !== player.mass) {
-        if (this.mass > player.mass + config.massDiffToEat) {
-          fight = { winner: this.id, loser: player.id };
-        } else if (this.mass + config.massDiffToEat < player.mass) {
-          fight = { winner: player.id, loser: this.id };
-        }
-      }
+          // players touching
+          if (distance.total < (otherCell.mass + thisCell.mass)) {
+            if (thisCell.mass > otherCell.mass + config.massDiffToEat) {
+              // this player's cell won
+              thisCell.eat(otherCell.mass);
+              this.eat(otherCell.mass);
+              player.cells.splice(otherCellIndex, 1);
+            } else if (thisCell + config.massDiffToEat < otherCell.mass) {
+              // other player's cell won
+              otherCell.eat(thisCell.mass);
+              player.eat(thisCell.mass);
+              this.cells.splice(thisCellIndex, 1);
+            }
+          }
+        });
+      });
     });
-
-    return fight;
   }
 
   checkFood(foods) {
     let ate = false;
 
-    foods.forEach((food, i) => {
-      const distance = getDistance(this.pos.x, food.pos.x, this.pos.y, food.pos.y);
+    this.cells.forEach(cell => foods.forEach((food, i) => {
+      const distance = getDistance(cell.pos.x, food.pos.x, cell.pos.y, food.pos.y);
 
-      if (distance.total < this.mass) {
+      if (distance.total < cell.mass) {
         this.eat(1);
+        cell.eat(1);
         foods.splice(i, 1);
         ate = true;
       }
-    });
+    }));
 
     return ate;
   }
 
   checkMasses(masses) {
-    masses.forEach((mass, i) => {
-      const distance = getDistance(this.pos.x, mass.pos.x, this.pos.y, mass.pos.y);
+    this.cells.forEach(cell => masses.forEach((mass, i) => {
+      const distance = getDistance(cell.pos.x, mass.pos.x, cell.pos.y, mass.pos.y);
 
-      if (distance.total < this.mass) {
+      if (distance.total < cell.mass) {
         this.eat(mass.mass);
+        cell.eat(mass.mass);
         masses.splice(i, 1);
       }
-    });
+    }));
   }
 }
 

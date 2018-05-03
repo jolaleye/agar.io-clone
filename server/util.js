@@ -16,7 +16,7 @@ exports.createFood = count => {
 };
 
 exports.getLeaders = (players, currentPlayer) => {
-  const sortedPlayers = _.sortBy(Object.values(players), p => p.mass).reverse();
+  const sortedPlayers = _.sortBy(Object.values(players), p => p.totalMass).reverse();
 
   // give every player their rank
   // eslint-disable-next-line

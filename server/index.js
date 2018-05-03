@@ -34,23 +34,20 @@ io.on('connection', socket => {
   });
 
   socket.on('requestPlayers', () => {
-    const playersList = Object.values(players);
-    let fight = false;
+    player.checkOthers(Object.values(players));
 
-    if (playersList.length > 1) fight = player.checkOthers(playersList);
-
-    // current player won
-    if (fight && fight.winner === player.id) player.eat(players[fight.loser].mass);
-    // current player lost
-    else if (fight && fight.loser === player.id) socket.emit('death');
-    delete players[fight.loser];
+    if (players[player.id] && _.isEmpty(player.cells)) {
+      delete players[player.id];
+      socket.emit('death');
+    }
 
     socket.emit('players', players);
   });
 
   socket.on('requestMove', target => {
     player.move(target);
-    socket.emit('moveTo', player.pos);
+    player.updateMass();
+    socket.emit('moveTo', player.center);
   });
 
   socket.on('requestFood', () => {

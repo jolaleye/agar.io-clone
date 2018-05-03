@@ -10,18 +10,18 @@ class Player {
     if (config.playing) this.currentPlayer = players[this.currentPlayer.id];
   }
 
-  moveTo = pos => {
-    this.currentPlayer.pos.x = pos.x;
-    this.currentPlayer.pos.y = pos.y;
+  moveTo = center => {
+    this.currentPlayer.center.x = center.x;
+    this.currentPlayer.center.y = center.y;
   }
 
   drawPlayers = () => {
     const c = canvas.context;
 
-    this.players.forEach(player => {
-      const x = player.pos.x - config.offset.x;
-      const y = player.pos.y - config.offset.y;
-      const radius = player.mass;
+    this.players.forEach(player => player.cells.forEach(cell => {
+      const x = cell.pos.x - config.offset.x;
+      const y = cell.pos.y - config.offset.y;
+      const radius = cell.mass;
       const fontSize = Math.max(radius / 2, 30);
 
       // cell
@@ -43,7 +43,7 @@ class Player {
       c.textBaseline = 'middle';
       c.fillText(player.name, x, y);
       c.strokeText(player.name, x, y);
-    });
+    }));
   }
 }
 

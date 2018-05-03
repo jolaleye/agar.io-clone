@@ -13,8 +13,8 @@ class Canvas {
 
   update = () => {
     // follow the player's position
-    config.offset.x = player.currentPlayer.pos.x - (config.screenWidth / 2);
-    config.offset.y = player.currentPlayer.pos.y - (config.screenHeight / 2);
+    config.offset.x = player.currentPlayer.center.x - (config.screenWidth / 2);
+    config.offset.y = player.currentPlayer.center.y - (config.screenHeight / 2);
   }
 
   resize = () => {
