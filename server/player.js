@@ -41,13 +41,13 @@ class Player {
       this.center.x = this.cells[0].pos.x;
       this.center.y = this.cells[0].pos.y;
     } else {
-      const maxX = _.maxBy(this.cells, cell => cell.pos.x);
-      const minX = _.minBy(this.cells, cell => cell.pos.x);
-      const maxY = _.maxBy(this.cells, cell => cell.pos.y);
-      const minY = _.minBy(this.cells, cell => cell.pos.y);
+      const maxX = _.maxBy(this.cells, cell => cell.pos.x).pos.x;
+      const minX = _.minBy(this.cells, cell => cell.pos.x).pos.x;
+      const maxY = _.maxBy(this.cells, cell => cell.pos.y).pos.y;
+      const minY = _.minBy(this.cells, cell => cell.pos.y).pos.y;
 
-      const x = (maxX - minX) / 2;
-      const y = (maxY - minY) / 2;
+      const x = (maxX + minX) / 2;
+      const y = (maxY + minY) / 2;
       this.center = { x, y };
     }
   }
@@ -62,12 +62,13 @@ class Player {
   }
 
   eject(masses) {
-    const cell = this.cells[0];
+    // largest cell
+    const cell = _.maxBy(this.cells, c => c.mass);
 
-    // must have a certain mass and can't be split
-    if (cell.mass < config.massToEject || this.cells.length > 1) return;
+    // must have a certain mass
+    if (cell.mass < config.massToEject) return;
 
-    // eject the mass in the direction the player is moving
+    // eject the mass in the direction the cell is moving
     let x = cell.pos.x + (cell.dx < 0 ? -cell.mass : cell.mass);
     let y = cell.pos.y + (cell.dy < 0 ? -cell.mass : cell.mass);
 
@@ -77,9 +78,49 @@ class Player {
 
     const newMass = new Mass(x, y, cell.dx * 2, cell.dy * 2, this.fillColor, this.strokeColor);
 
-    cell.mass -= newMass.mass;
+    cell.eat(-newMass.mass);
+    this.eat(-newMass.mass);
 
     masses.push(newMass);
+  }
+
+  split() {
+    // largest cell
+    const cell = _.maxBy(this.cells, c => c.mass);
+
+    // must have a certain mass
+    if (cell.mass < config.massToSplit) return;
+
+    // split in the direction the cell is moving
+    let x = cell.pos.x + (cell.dx < 0 ? -cell.mass : cell.mass);
+    let y = cell.pos.y + (cell.dy < 0 ? -cell.mass : cell.mass);
+
+    // keep the cell in the game area
+    x = _.clamp(x, 0, config.gameWidth);
+    y = _.clamp(y, 0, config.gameHeight);
+
+    const newCell = new Cell(cell.mass / 2, x, y, cell.dx, cell.dy);
+
+    cell.eat(-newCell.mass);
+    this.cells.push(newCell);
+  }
+
+  checkSelf() {
+    // check cells against every other cell
+    this.cells.forEach((cell1, cell1Index) => this.cells.forEach((cell2, cell2Index) => {
+      const distance = getDistance(cell1.pos.x, cell2.pos.x, cell1.pos.y, cell2.pos.y);
+
+      // cells have to overlap a little
+      if (distance.total < ((cell1.mass * 0.8) + (cell2.mass * 0.8))) {
+        if (cell1.mass > cell2.mass) {
+          cell1.eat(cell2.mass);
+          this.cells.splice(cell2Index, 1);
+        } else if (cell2.mass > cell1.mass) {
+          cell2.eat(cell1.mass);
+          this.cells.splice(cell1Index, 1);
+        }
+      }
+    }));
   }
 
   checkOthers(players) {
