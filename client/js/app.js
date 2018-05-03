@@ -23,10 +23,10 @@ export const update = () => {
   if (config.playing) {
     canvas.update();
     socket.emit('requestMove', ui.target);
+    socket.emit('requestScore');
   }
   socket.emit('requestPlayers');
   socket.emit('requestFood');
-  socket.emit('requestScore');
   socket.emit('requestLeaders');
   socket.emit('requestMasses');
 };
