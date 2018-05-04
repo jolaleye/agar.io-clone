@@ -2,6 +2,7 @@ const _ = require('lodash');
 
 const config = require('./config');
 const Food = require('./Food');
+const Spike = require('./Spike');
 
 exports.createFood = count => {
   const food = [];
@@ -36,5 +37,13 @@ exports.getDistance = (x1, x2, y1, y2) => ({
   y: y2 - y1,
   total: Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2)),
 });
+
+exports.createSpikes = count => {
+  const spikes = [];
+
+  _.times(count, () => spikes.push(new Spike()));
+
+  return spikes;
+};
 
 module.exports = exports;
