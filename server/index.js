@@ -3,7 +3,7 @@ const _ = require('lodash');
 
 const config = require('./config');
 const Player = require('./Player');
-const { createFood, getLeaders } = require('./util');
+const { createFood, getLeaders, createSpikes } = require('./util');
 
 const app = express();
 
@@ -21,9 +21,12 @@ const io = require('socket.io')(server);
 let players = {};
 let food = [];
 const masses = [];
+let spikes = [];
 
 io.on('connection', socket => {
   let player;
+
+  spikes = createSpikes(config.numOfSpikes);
 
   socket.on('joinGame', (name, assignPlayer) => {
     player = new Player(socket.id, name);
@@ -31,6 +34,8 @@ io.on('connection', socket => {
     assignPlayer(player);
 
     if (food.length < config.maxFood) food = food.concat(createFood(config.foodToAddOnJoin));
+
+    socket.emit('spikes', spikes);
   });
 
   socket.on('requestPlayers', () => {
@@ -47,6 +52,7 @@ io.on('connection', socket => {
   socket.on('requestMove', target => {
     player.move(target);
     player.checkSelf();
+    player.checkSpikes(spikes);
     player.updateMass();
     socket.emit('moveTo', player.center);
   });
