@@ -9,6 +9,8 @@ module.exports = {
   massDiffToEat: 10,
   massToEject: 65,
   massToSplit: 80,
+  numOfSpikes: 8,
+  massToBreak: 100,
   colors: [
     { fill: '#F44336', stroke: '#E53935' },
     { fill: '#E91E63', stroke: '#D81B60' },
