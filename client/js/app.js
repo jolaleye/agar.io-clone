@@ -5,6 +5,7 @@ import player from './player';
 import ui from './ui';
 import food from './food';
 import mass from './mass';
+import spike from './spike';
 
 export const handleSocket = () => {
   socket.on('players', players => player.updatePlayers(players));
@@ -13,6 +14,7 @@ export const handleSocket = () => {
   socket.on('masses', masses => mass.updateMasses(masses));
   socket.on('score', score => ui.updateScore(score));
   socket.on('leaders', leaders => ui.updateLeaderboard(leaders));
+  socket.on('spikes', spikes => spike.updateSpikes(spikes));
   socket.on('death', () => {
     config.playing = false;
     ui.endGame();
@@ -36,4 +38,5 @@ export const draw = () => {
   food.drawFood();
   player.drawPlayers();
   mass.drawMasses();
+  spike.drawSpikes();
 };
