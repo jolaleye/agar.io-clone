@@ -123,6 +123,14 @@ class Player {
     }));
   }
 
+  checkSpikes(spikes) {
+    this.cells.forEach(cell => spikes.forEach(spike => {
+      const distance = getDistance(cell.pos.x, spike.pos.x, cell.pos.y, spike.pos.y);
+
+      if (distance.total < (spike.radius / 2) && cell.mass > config.massToBreak) this.split();
+    }));
+  }
+
   checkOthers(players) {
     // check every player
     players.forEach(player => {
