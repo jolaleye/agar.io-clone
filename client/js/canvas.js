@@ -27,21 +27,22 @@ class Canvas {
     const { context: c, gridImage: image } = this;
     const { offset, screenWidth, screenHeight } = config;
 
-    c.clearRect(0, 0, config.screenWidth, config.screenHeight);
+    c.clearRect(0, 0, screenWidth, screenHeight);
 
-    // crop positions - adding half the screen so that the grid appears beyond game boundaries
-    const sx = offset.x + (config.screenWidth / 2);
-    const sy = offset.y + (config.screenHeight / 2);
-
-    c.drawImage(image, sx, sy, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight);
+    c.drawImage(
+      image,
+      offset.x + 1000, offset.y + 1000, screenWidth, screenHeight,
+      0, 0, screenWidth, screenHeight,
+    );
   }
 
   drawGrid = () => {
     // make a temporary canvas to draw a game-sized grid
     const c = document.createElement('canvas').getContext('2d');
 
-    const width = config.gameWidth + config.screenWidth;
-    const height = config.gameHeight + config.screenHeight;
+    // add some extra space for outside the game boundaries
+    const width = config.gameWidth + 2000;
+    const height = config.gameHeight + 2000;
 
     c.canvas.width = width;
     c.canvas.height = height;
