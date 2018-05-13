@@ -7,32 +7,32 @@ class Canvas {
   gridImage = null;
 
   constructor() {
-    this.canvas.width = config.screenWidth;
-    this.canvas.height = config.screenHeight;
+    this.canvas.width = config.deviceWidth;
+    this.canvas.height = config.deviceHeight;
   }
 
   update = () => {
     // follow the player's position
-    config.offset.x = player.currentPlayer.center.x - (config.screenWidth / 2);
-    config.offset.y = player.currentPlayer.center.y - (config.screenHeight / 2);
+    config.offset.x = player.currentPlayer.center.x - (this.canvas.width / 2);
+    config.offset.y = player.currentPlayer.center.y - (this.canvas.height / 2);
   }
 
   resize = () => {
-    this.canvas.width = config.screenWidth;
-    this.canvas.height = config.screenHeight;
+    this.canvas.width = Math.round(config.deviceWidth / config.scale);
+    this.canvas.height = Math.round(config.deviceHeight / config.scale);
     this.reset();
   }
 
   reset = () => {
-    const { context: c, gridImage: image } = this;
-    const { offset, screenWidth, screenHeight } = config;
+    const { context: c, gridImage: image, canvas } = this;
+    const { offset } = config;
 
-    c.clearRect(0, 0, screenWidth, screenHeight);
+    c.clearRect(0, 0, canvas.width, canvas.height);
 
     c.drawImage(
       image,
-      offset.x + 1000, offset.y + 1000, screenWidth, screenHeight,
-      0, 0, screenWidth, screenHeight,
+      offset.x + 1000, offset.y + 1000, canvas.width, canvas.height,
+      0, 0, canvas.width, canvas.height,
     );
   }
 
