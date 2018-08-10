@@ -1,3 +1,2 @@
-![](screenshot.png)
-
-A clone of agar.io using Socket.IO and HTML5 canvas
+# agar.io-clone
+A (near) clone of agar.io using Socket.IO and HTML5 canvas
